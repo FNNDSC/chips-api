@@ -143,9 +143,9 @@
 
     __getFilesPlugin(api, data, plugin) {
       // get files
-      return api.request('GET', plugin.links.feed + 'files/', data).
+      return api.request('GET', plugin.links.feed + 'files/', data); //.
         // filter in files that belong to plugin
-        then(this.__filterFilesPlugin.bind(this, plugin));
+        // then(this.__filterFilesPlugin.bind(this, plugin));
     }
 
     __filterFilesPlugin(plugin, files) {
