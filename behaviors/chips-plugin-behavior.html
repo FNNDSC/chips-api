@@ -100,6 +100,8 @@
     // TODO: cleanup
     __waitEndPlugin(api, data, response) {
       // also works with collections
+      data.timeout = 5000;
+
       var plugin = response;
       if (Array.isArray(plugin.data)) {
         plugin = plugin.data[0];
@@ -107,13 +109,13 @@
   
       this.__notifyPluginStarted(plugin);
       var waitForEnd = new Promise(
-          function(resolve, reject) {
-            var remainingAttemps = 600;
-            var timeout = 1000;
-            function run() {
+        (resolve, reject) => {
+          var remainingAttemps = 600;
+          var timeout = 3000;
+          var run = () => {
             // get plugin status
             api.request('GET', plugin.href, data).
-            then(function(response2) {
+            then((response2) => {
               // check depdending on status
               if (remainingAttemps > 0 &&
                   response2.data[0].data.status !== 'started') {
@@ -122,21 +124,27 @@
               } else {
                 remainingAttemps--;
                 if (remainingAttemps <= 0) {
-                  const error = {
+                  var error = {
                     status: 'error',
                     data: `Feed: ${response2.data[0].href}`,
                     command: 'timeout in __waitEndPlugin',
                   };
                   reject(error);
                 } else {
-                  setTimeout(run, timeout);
+                  window.setTimeout(run, timeout);
                 }
               }
-            }.bind(this));
-            }
-            run = run.bind(this);
-            run();
-          }.bind(this)
+            })
+            .catch((response) => {
+              if (response.error.type === 'timeout') {
+                window.setTimeout(run, timeout);
+              } else {
+                reject(response);
+              }
+            });
+          }
+          run();
+        }
       );
       return waitForEnd;
     }
@@ -144,7 +152,6 @@
     __getFilesPlugin(api, data, plugin) {
       // get files
       return api.request('GET', plugin.links.feed + 'files/', data).
-        // filter in files that belong to plugin
         then(this.__filterFilesPlugin.bind(this, plugin));
     }
 
@@ -155,8 +162,7 @@
           // filter/format files
           for (var i = 0; i < files.data.length; i++) {
             if (files.data[i].data.plugin_inst_id === plugin.data.id) {
-              var formatFile = this.__formatFile(files.data[i]);
-              filter.push(formatFile);
+              filter.push(files.data[i]);
             }
           }
 

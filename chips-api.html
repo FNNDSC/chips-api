@@ -25,7 +25,8 @@ Copyright (c) 2016 FNNDSC. All rights reserved.
       last-error="{{error}}"
       handle-as="[[handleAs]]"
       auto="[[auto]]"
-      headers="[[headers]]">
+      headers="[[headers]]"
+      timeout="[[timeout]]">
     </iron-ajax>
   </template>
 
@@ -82,6 +83,10 @@ Copyright (c) 2016 FNNDSC. All rights reserved.
             type: Boolean,
             value: false,
           },
+          timeout: {
+            type: Number,
+            value: 0,
+          },
           response: {
             type: Object,
             value: {},
@@ -125,6 +130,7 @@ Copyright (c) 2016 FNNDSC. All rights reserved.
           this._handleParameters(data.params);
           this._handleBody(target, data.body);
           this._handleAuthorization(data.auth);
+          this._handleTimeout(data.timeout);
           this._handleType(target);
 
           const request = this.generateRequest();
@@ -277,6 +283,15 @@ Copyright (c) 2016 FNNDSC. All rights reserved.
           }
         }
 
+        _handleTimeout(timeout) {
+          if (timeout === undefined) {
+            this.timeout = 0;
+            return;
+          }
+          
+          this.timeout = timeout;
+        }
+
         _handleType(target) {
           if (target === 'login') {
             this.headers['Content-Type'] = 'application/json';
@@ -359,8 +374,6 @@ Copyright (c) 2016 FNNDSC. All rights reserved.
           if (method === undefined) {
             return;
           }
-
-          console.log(method);
 
           this.$.ironAjax.method = method;
         }
