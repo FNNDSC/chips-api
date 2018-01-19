@@ -117,8 +117,8 @@ Copyright (c) 2016 FNNDSC. All rights reserved.
 
       ready() {
         super.ready();
-        this.apiRoot = ChipsConfiguration.apiRoot;
-        this.api = ChipsConfiguration.api;
+        this.apiRoot = typeof ChipsConfiguration === 'undefined' ? this.apiRoot : ChipsConfiguration.apiRoot;
+        this.api = typeof ChipsConfiguration === 'undefined' ? this.api : ChipsConfiguration.api;
       }
 
       request(action, target, data) {
@@ -154,6 +154,7 @@ Copyright (c) 2016 FNNDSC. All rights reserved.
           if (this.apiRoot === '' || this.api === '') {
             return;
           }
+
           this.url = this.apiRoot + this[`__${this.api}ApiUrl`](this.target);
         }
 
