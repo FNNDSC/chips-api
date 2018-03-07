@@ -4,6 +4,8 @@
 
     __ultronApiUrl(type) {
       switch (type) {
+        case 'data':
+          return '/uploadedfiles/';
         case 'login':
           return '/auth-token/';
         case 'feeds':
